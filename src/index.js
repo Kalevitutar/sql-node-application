@@ -48,6 +48,15 @@ const getLanguage = async (id) => {
   return result.rows;
 };
 
+const deleteLanguage = async (num) => {
+  await client.connect();
+  console.log("this is the id in number format from helper function ", num);
+  const result = await client.query(
+    `DELETE * FROM programming_languages WHERE id = ${num}`
+  );
+  await client.end();
+};
+
 //ROUTES
 
 app.post("/add-language", async (req, res) => {
@@ -74,6 +83,17 @@ app.get("/get-language/:id", async (req, res) => {
   res.send(language);
 });
 
+app.delete("/delete-language/:id", async (req, res) => {
+  const num = Number(req.params.id);
+  console.log("this is the id in number format from api function ", num);
+  const languageName = await client.query(
+    `SELECT name FROM programming_languages WHERE id = ${num}`
+  );
+  console.log("the language name is ", languageName);
+  const result = await deleteLanguage(num);
+  res.status(201).json(`${languageName} is now deleted`);
+});
+
 app.listen(port, () => {
-  console.log(`Example app listening at http://localhost:${port}`);
+  console.log(`doublepi listening at http://localhost:${port}`);
 });
